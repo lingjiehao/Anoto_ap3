@@ -39,7 +39,27 @@
 //#include <sys/stat.h>
 
 #include "sbc.h"
-typedef unsigned char bool;
+
+#include "audiodriver.h"
+
+#define SBC_IN_RING_BUFF_SIZE           (BUF_SIZE*2)
+
+//
+// If using SBC compression, select audio transfer compression ratio
+// 1:1 = 256000 bps, 4:1 = 64000 bps, 8:1 = 32000 bps, 16:1 = 16000 bps
+//
+#define SBC_BLUEZ_COMPRESS_BPS          64000
+#define SBC_OUT_RING_BUFF_SIZE          (SBC_BLUEZ_COMPRESS_BPS / 1000)
+
+#define CODEC_IN_RING_BUFF_SIZE     SBC_IN_RING_BUFF_SIZE
+#define CODEC_OUT_RING_BUFF_SIZE    SBC_OUT_RING_BUFF_SIZE
+
+int8_t codecInputBuffer[CODEC_IN_RING_BUFF_SIZE];
+uint8_t codecOutputBuffer[CODEC_OUT_RING_BUFF_SIZE];
+sbc_t   g_BluezSBCInstance;
+
+
+//typedef unsigned char bool;
 
 #define true			1
 #define false			0
@@ -214,7 +234,7 @@ static uint8_t sbc_crc8(const uint8_t *data, size_t len)
 	return crc;
 }
 
-#define BUF_SIZE 8192
+//#define BUF_SIZE 8192
 
 #define APP_WAVE_HDR_SIZE 44
 const unsigned char app_wav_hdr[APP_WAVE_HDR_SIZE] =
@@ -2253,4 +2273,19 @@ void sbc_encoder_uninit(sbc_t *sbc)
 	free(sbc->priv_alloc_base);
 
 	memset(sbc, 0, sizeof(sbc_t));
+}
+
+
+void SBC_init(void)
+{
+	sbc_encode_init(&g_BluezSBCInstance, 0);  //0: SBC
+	g_BluezSBCInstance.endian = SBC_LE;
+}
+
+void SBC_process(int8_t *data)
+{
+	int32_t CompressedLen;
+	sbc_encoder_encode(&g_BluezSBCInstance, (const void *)data, CODEC_IN_RING_BUFF_SIZE, 
+                          	      (void *)codecOutputBuffer, CODEC_OUT_RING_BUFF_SIZE, &CompressedLen);
+	memcpy(data,(codecOutputBuffer),CODEC_OUT_RING_BUFF_SIZE);
 }

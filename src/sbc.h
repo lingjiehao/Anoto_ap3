@@ -823,6 +823,9 @@ ssize_t sbc_encoder_encode(sbc_t *sbc, const void *input, size_t input_len,
 			void *output, size_t output_len, ssize_t *written);
 void sbc_encoder_uninit(sbc_t *sbc);
 
+void SBC_init(void);
+void SBC_process(int8_t *data);
+
 #ifdef __cplusplus
 }
 #endif

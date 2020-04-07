@@ -42,8 +42,8 @@ void *PDMHandle;
 am_hal_pdm_config_t g_sPdmConfig =
 {
 	.eClkDivider = AM_HAL_PDM_MCLKDIV_1,
-	.eLeftGain = AM_HAL_PDM_GAIN_P405DB,
-	.eRightGain = AM_HAL_PDM_GAIN_P405DB,
+	.eLeftGain = AM_HAL_PDM_GAIN_P225DB,
+	.eRightGain = AM_HAL_PDM_GAIN_P225DB,
 	.ui32DecimationRate = (OSR/2),
 	.bHighPassEnable = 0,
 	.ui32HighPassCutoff = 0xB,

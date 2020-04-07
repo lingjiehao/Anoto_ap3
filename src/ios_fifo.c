@@ -58,6 +58,7 @@
 #include "am_util.h"
 
 #include "audiodriver.h"
+#include "sbc.h"
 
 
 #define     TEST_IOS_XCMP_INT   1
@@ -310,6 +311,8 @@ int main(void)
     am_util_stdio_terminal_clear();
     //am_util_stdio_printf("IOS FIFO Example\n");
 
+	SBC_init();
+	
     //
     // Enable the IOS
     //
@@ -340,7 +343,7 @@ int main(void)
 			//am_hal_gpio_out_bit_clear(8);
 			
 			//nr_process(u32PDMpg);
-			//SBC_process(u32PDMpg);
+			SBC_process((int8_t*)(g_i16PDMBuf[(u32PDMpg-1)%2]));
 
 			//am_hal_gpio_out_bit_set(8);
 			am_hal_ios_fifo_write(g_pIOSHandle, (uint8_t *)g_i16PDMBuf[(u32PDMpg-1)%2], BUF_SIZE*2/4, &numWritten);

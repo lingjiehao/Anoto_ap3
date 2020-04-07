@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include "am_mcu_apollo.h"
+
 #define BUF_SIZE			128
 
 extern volatile bool g_bPDMDataReady;
