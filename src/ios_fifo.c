@@ -57,6 +57,8 @@
 #include "am_bsp.h"
 #include "am_util.h"
 
+#include "audiodriver.h"
+
 
 #define     TEST_IOS_XCMP_INT   1
 
@@ -91,8 +93,6 @@ static void *g_pIOSHandle;
 // data from the IOS interface, which is only 8 bits wide.
 //
 //*****************************************************************************
-#define AM_TEST_REF_BUF_SIZE    128
-
 #define AM_IOS_TX_BUFSIZE_MAX   1023
 uint8_t g_pui8TxFifoBuffer[AM_IOS_TX_BUFSIZE_MAX];
 
@@ -250,7 +250,7 @@ void am_ioslave_ios_isr(void)
         switch(pui8Packet[0])
         {
             case AM_IOSTEST_CMD_START_DATA:
-
+				pdm_init();
                 break;
 
             case AM_IOSTEST_CMD_STOP_DATA:
@@ -286,8 +286,6 @@ void am_ioslave_ios_isr(void)
 //*****************************************************************************
 int main(void)
 {
-    int i;
-
     am_hal_clkgen_control(AM_HAL_CLKGEN_CONTROL_SYSCLK_MAX, 0);
 
     //
@@ -327,7 +325,7 @@ int main(void)
     //
     while(1)
     {
-#if 0
+#if 1
 		uint32_t numWritten = 0;
 		uint32_t ui32UsedSpace = 0;
 		uint32_t u32PDMpg;
@@ -336,7 +334,7 @@ int main(void)
 		if (g_bPDMDataReady)
 		{
 			g_bPDMDataReady = false;
-			u32PDMpg = u32PDMPingpong;
+			u32PDMpg = g_u32PDMPingpong;
 			// Enable the interrupts
 			am_hal_interrupt_master_set(ui32IntStatus);
 			//am_hal_gpio_out_bit_clear(8);
@@ -345,7 +343,7 @@ int main(void)
 			//SBC_process(u32PDMpg);
 
 			//am_hal_gpio_out_bit_set(8);
-			am_hal_ios_fifo_write(g_pIOSHandle, (uint8_t *)i16PDMBuf[(u32PDMpg-1)%2], AM_TEST_REF_BUF_SIZE*2/4, &numWritten);
+			am_hal_ios_fifo_write(g_pIOSHandle, (uint8_t *)g_i16PDMBuf[(u32PDMpg-1)%2], BUF_SIZE*2/4, &numWritten);
 
             // If we were Idle - need to inform Host if there is new data
             if (g_iosState == AM_IOSTEST_SLAVE_STATE_NODATA)

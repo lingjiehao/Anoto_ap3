@@ -6,8 +6,10 @@
 #include "am_bsp.h"
 #include "am_util.h"
 
+#include "audiodriver.h"
 
-#define BUF_SIZE			128
+
+
 //#define OSR					(192) //over sampling rate 3MHz
 //#define OSR				(128) //over sampling rate 2MHz
 //#define OSR				(96) //over sampling rate 1.5MHz
@@ -25,9 +27,9 @@
 //*****************************************************************************
 volatile bool g_bPDMDataReady = false;
 
-int16_t i16PDMBuf[2][BUF_SIZE] = {{0},{0}};
+int16_t g_i16PDMBuf[2][BUF_SIZE] = {{0},{0}};
 
-uint32_t u32PDMPingpong = 0;
+uint32_t g_u32PDMPingpong = 0;
 
 
 //*****************************************************************************
@@ -56,6 +58,28 @@ am_hal_pdm_config_t g_sPdmConfig =
 	.bLRSwap = 0,
 };
 
+//*****************************************************************************
+//
+// Start a transaction to get some number of bytes from the PDM interface.
+//
+//*****************************************************************************
+void
+pdm_data_get(int16_t *dest)
+{
+	//
+	// Configure DMA and target address.
+	//
+	am_hal_pdm_transfer_t sTransfer;
+	sTransfer.ui32TargetAddr = (uint32_t ) dest;
+	sTransfer.ui32TotalCount = BUF_SIZE*2;
+
+
+	//
+	// Start the data transfer.
+	//
+	am_hal_pdm_dma_start(PDMHandle, &sTransfer);
+
+}
 
 //*****************************************************************************
 //
@@ -84,6 +108,8 @@ pdm_init(void)
 	sPinCfg.uFuncSel = AM_HAL_PIN_11_PDMDATA;
 	am_hal_gpio_pinconfig(11, sPinCfg);
 
+	am_hal_pdm_fifo_flush(PDMHandle);
+
 	
 	//
 	// Configure and enable PDM interrupts (set up to trigger on DMA
@@ -96,29 +122,9 @@ pdm_init(void)
 
 	NVIC_EnableIRQ(PDM_IRQn);
 
-}
 
-
-//*****************************************************************************
-//
-// Start a transaction to get some number of bytes from the PDM interface.
-//
-//*****************************************************************************
-void
-pdm_data_get(int16_t *dest)
-{
-	//
-	// Configure DMA and target address.
-	//
-	am_hal_pdm_transfer_t sTransfer;
-	sTransfer.ui32TargetAddr = (uint32_t ) dest;
-	sTransfer.ui32TotalCount = BUF_SIZE*2;
-
-
-	//
-	// Start the data transfer.
-	//
-	am_hal_pdm_dma_start(PDMHandle, &sTransfer);
+	// Start the first DMA transaction.
+	pdm_data_get(g_i16PDMBuf[0]);
 
 }
 
@@ -128,7 +134,7 @@ pdm_data_get(int16_t *dest)
 //
 //*****************************************************************************
 void
-am_pdm_isr(void)
+am_pdm0_isr(void)
 {
 	uint32_t ui32Status;
 	//am_hal_gpio_state_write(8 , AM_HAL_GPIO_OUTPUT_CLEAR);
@@ -142,7 +148,7 @@ am_pdm_isr(void)
 	if (ui32Status & AM_HAL_PDM_INT_DCMP)
 	{
 		g_bPDMDataReady = true;
-		pdm_data_get(i16PDMBuf[(++u32PDMPingpong)%2]);
+		pdm_data_get(g_i16PDMBuf[(++g_u32PDMPingpong)%2]);
 	}
  	//am_hal_gpio_output_toggle(8); 
 }
