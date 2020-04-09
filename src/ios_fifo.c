@@ -59,6 +59,7 @@
 
 #include "audiodriver.h"
 #include "sbc.h"
+#include "RelaJet.h"
 
 
 #define     TEST_IOS_XCMP_INT   1
@@ -309,14 +310,16 @@ int main(void)
     // Clear the terminal and print the banner.
     //
     am_util_stdio_terminal_clear();
+#ifdef RELAJET	
 	{
 		int16_t ret;
 		int16_t LibVer;
 
 		/*return 1 means Licence key verification is OK */
-		//ret = getVersion(&LibVer);
+		ret = getVersion(&LibVer);
 		am_util_stdio_printf("getVersion ret=%d,LibVer=%d\n",ret, LibVer );
 	}
+#endif
 	//am_util_stdio_printf("IOS FIFO Example\n");
 
 	SBC_init();
@@ -336,7 +339,6 @@ int main(void)
     //
     while(1)
     {
-#if 1
 		uint32_t numWritten = 0;
 		uint32_t ui32UsedSpace = 0;
 		uint32_t u32PDMpg;
@@ -349,8 +351,9 @@ int main(void)
 			// Enable the interrupts
 			am_hal_interrupt_master_set(ui32IntStatus);
 			//am_hal_gpio_out_bit_clear(8);
-			
-			//nr_process(u32PDMpg);
+#ifdef RELAJET	
+			NR_process(g_i16PDMBuf[(u32PDMpg-1)%2]);
+#endif
 			SBC_process((int8_t*)(g_i16PDMBuf[(u32PDMpg-1)%2]));
 
 			//am_hal_gpio_out_bit_set(8);
@@ -376,9 +379,6 @@ int main(void)
             // Enable the interrupts
             am_hal_interrupt_master_set(ui32IntStatus);
         }
-#else
-			am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_NORMAL);
-#endif
     }
 }
 

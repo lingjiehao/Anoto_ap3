@@ -88,6 +88,7 @@ DEFINES+= -DAM_UTIL_FAULTISR_PRINT
 DEFINES+= -DAM_PACKAGE_BGA
 DEFINES+= -DAM_PART_APOLLO3
 DEFINES+= -Dgcc
+DEFINES+= -DRELAJET
 
 INCLUDES = -I../../../../../mcu/apollo3
 INCLUDES+= -I../../../../..
@@ -108,6 +109,7 @@ VPATH+=:../../../../../devices
 SRC = AudioDriver.c
 SRC += ios_fifo.c
 SRC += sbc.c
+SRC += RelaJet.c
 
 
 SRC += am_util_delay.c
