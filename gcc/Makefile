@@ -82,26 +82,38 @@ all clean:
 else
 
 DEFINES = -DPART_$(PART)
+DEFINES+= -D__FPU_PRESENT
+DEFINES+= -DUNITY_INCLUDE_CONFIG_H
+DEFINES+= -DAM_UTIL_FAULTISR_PRINT
 DEFINES+= -DAM_PACKAGE_BGA
 DEFINES+= -DAM_PART_APOLLO3
 DEFINES+= -Dgcc
 
-INCLUDES = -I../../../../../CMSIS/ARM/Include
-INCLUDES+= -I../../../../../devices
-INCLUDES+= -I../src
+INCLUDES = -I../../../../../mcu/apollo3
 INCLUDES+= -I../../../../..
+INCLUDES+= -I../src
 INCLUDES+= -I../../../../../CMSIS/AmbiqMicro/Include
 INCLUDES+= -I../../../../../utils
+INCLUDES+= -I../../../../../devices
 INCLUDES+= -I../../../bsp
-INCLUDES+= -I../../../../../mcu/apollo3
+INCLUDES+= -I../../../../..CMSIS/ARM/Include
+INCLUDES+= -I../../../../../CMSIS/ARM/Include
+
+INCLUDES+= -I../../../../../devices
 
 VPATH = ../../../../../utils
 VPATH+=:../src
 VPATH+=:../../../../../devices
 
-SRC = ios_fifo.c
+SRC = AudioDriver.c
+SRC += ios_fifo.c
+SRC += sbc.c
+
+
 SRC += am_util_delay.c
+SRC += am_util_faultisr.c
 SRC += am_util_stdio.c
+SRC += am_util_id.c
 SRC += startup_gcc.c
 
 CSRC = $(filter %.c,$(SRC))
@@ -113,16 +125,18 @@ OBJS+= $(ASRC:%.s=$(CONFIG)/%.o)
 DEPS = $(CSRC:%.c=$(CONFIG)/%.d)
 DEPS+= $(ASRC:%.s=$(CONFIG)/%.d)
 
-LIBS = ../../../bsp/gcc/bin/libam_bsp.a
-LIBS += ../../../../../mcu/apollo3/hal/gcc/bin/libam_hal.a
+LIBS = ../../../../../mcu/apollo3/hal/gcc/bin/libam_hal.a
+LIBS += ../../../bsp/gcc/bin/libam_bsp.a
+LIBS += ../lib/libarm_cortexM4lf_math_NN.a
+LIBS += ../lib/librelajetnn.a
 
 CFLAGS = -mthumb -mcpu=$(CPU) -mfpu=$(FPU) -mfloat-abi=$(FABI)
-CFLAGS+= -ffunction-sections -fdata-sections -fomit-frame-pointer
+CFLAGS+= -ffunction-sections -fdata-sections
 CFLAGS+= -MMD -MP -std=c99 -Wall -g
-CFLAGS+= -O0
+CFLAGS+= -O3
 CFLAGS+= $(DEFINES)
 CFLAGS+= $(INCLUDES)
-CFLAGS+= 
+CFLAGS+= -specs=nano.specs -specs=nosys.specs
 
 LFLAGS = -mthumb -mcpu=$(CPU) -mfpu=$(FPU) -mfloat-abi=$(FABI)
 LFLAGS+= -nostartfiles -static

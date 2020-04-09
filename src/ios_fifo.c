@@ -3,7 +3,7 @@
 //! @file ios_fifo.c
 //! Pin connections for the I/O Master board to the I/O Slave board.
 //! SPI:
-//!     HOST (ios_fifo_host)                    SLAVE (ios_fifo)
+//!     HOST (AP3 as MT2523)                    SLAVE (AP3)
 //!     --------------------                    ----------------
 //!     GPIO[10] GPIO Interrupt (slave to host) GPIO[4]  GPIO interrupt
 //!     GPIO[5]  IOM0 SPI SCK                   GPIO[0]  IOS SPI SCK
@@ -309,7 +309,15 @@ int main(void)
     // Clear the terminal and print the banner.
     //
     am_util_stdio_terminal_clear();
-    //am_util_stdio_printf("IOS FIFO Example\n");
+	{
+		int16_t ret;
+		int16_t LibVer;
+
+		/*return 1 means Licence key verification is OK */
+		//ret = getVersion(&LibVer);
+		am_util_stdio_printf("getVersion ret=%d,LibVer=%d\n",ret, LibVer );
+	}
+	//am_util_stdio_printf("IOS FIFO Example\n");
 
 	SBC_init();
 	
