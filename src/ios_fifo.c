@@ -61,6 +61,7 @@
 #include "sbc.h"
 #include "RelaJet.h"
 
+#define  FW_VER	2
 
 #define     TEST_IOS_XCMP_INT   1
 
@@ -281,6 +282,27 @@ void am_ioslave_ios_isr(void)
     }
 }
 
+static void VersionConfig(void)
+{
+#ifdef RELAJET
+	int16_t ret;
+	int16_t LibVer;
+
+	/*return 1 means Licence key verification is OK */
+	ret = getVersion(&LibVer);
+	if(ret == 1)
+		*(int16_t *)(am_hal_ios_pui8LRAM+6) = LibVer;// Relajet NR Version
+	else
+		*(int16_t *)(am_hal_ios_pui8LRAM+6) = -1;// Licence key verification failed
+
+#else
+	*(int16_t *)(am_hal_ios_pui8LRAM+6) = 0;//Without Relajet NR
+#endif
+	*(int16_t *)(am_hal_ios_pui8LRAM+4) = FW_VER;
+
+}
+
+
 //*****************************************************************************
 //
 // Main function.
@@ -310,16 +332,7 @@ int main(void)
     // Clear the terminal and print the banner.
     //
     am_util_stdio_terminal_clear();
-#ifdef RELAJET	
-	{
-		int16_t ret;
-		int16_t LibVer;
-
-		/*return 1 means Licence key verification is OK */
-		ret = getVersion(&LibVer);
-		am_util_stdio_printf("getVersion ret=%d,LibVer=%d\n",ret, LibVer );
-	}
-#endif
+	
 	//am_util_stdio_printf("IOS FIFO Example\n");
 
 	SBC_init();
@@ -328,6 +341,7 @@ int main(void)
     // Enable the IOS
     //
     ios_set_up();
+    VersionConfig();
 
     //
     // Enable interrupts so we can receive messages from the boot host.
