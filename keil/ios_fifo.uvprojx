@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>AM_PACKAGE_BGA AM_PART_APOLLO3 keil</Define>
               <Undefine></Undefine>
-              <IncludePath>../../../../../CMSIS/ARM/Include;../../../../../devices;../src;../../../../..;../../../../../CMSIS/AmbiqMicro/Include;../../../../../utils;../../../bsp;../../../../../mcu/apollo3</IncludePath>
+              <IncludePath>../../../../../CMSIS/ARM/Include;../../../../../devices;../src;../../../../..;../../../../../CMSIS/AmbiqMicro/Include;../../../../../utils;../../../bsp;../../../../../mcu/apollo3;..\..\..\..\..\third_party\FreeRTOSv10.1.1\Source\include;..\..\..\..\..\third_party\FreeRTOSv10.1.1\Source\portable\Keil\AMapollo2</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -397,6 +397,16 @@
               <FileType>1</FileType>
               <FilePath>..\src\sbc.c</FilePath>
             </File>
+            <File>
+              <FileName>rtos.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\rtos.c</FilePath>
+            </File>
+            <File>
+              <FileName>audio_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\audio_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -436,6 +446,46 @@
               <FileName>libam_hal.lib</FileName>
               <FileType>4</FileType>
               <FilePath>../../../../../mcu/apollo3/hal/keil/bin/libam_hal.lib</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>freeRTOS</GroupName>
+          <Files>
+            <File>
+              <FileName>port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\third_party\FreeRTOSv10.1.1\Source\portable\Keil\AMapollo2\port.c</FilePath>
+            </File>
+            <File>
+              <FileName>heap_2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\third_party\FreeRTOSv10.1.1\Source\portable\MemMang\heap_2.c</FilePath>
+            </File>
+            <File>
+              <FileName>event_groups.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\third_party\FreeRTOSv10.1.1\Source\event_groups.c</FilePath>
+            </File>
+            <File>
+              <FileName>list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\third_party\FreeRTOSv10.1.1\Source\list.c</FilePath>
+            </File>
+            <File>
+              <FileName>queue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\third_party\FreeRTOSv10.1.1\Source\queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\third_party\FreeRTOSv10.1.1\Source\tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>timers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\third_party\FreeRTOSv10.1.1\Source\timers.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -60,6 +60,7 @@
 #include "audiodriver.h"
 #include "sbc.h"
 #include "RelaJet.h"
+#include "ios_fifo.h"
 
 #define  FW_VER	2
 
@@ -79,15 +80,10 @@ typedef enum
 
 #define AM_IOSTEST_IOSTOHOST_DATAAVAIL_INTMASK  1
 
-typedef enum
-{
-    AM_IOSTEST_SLAVE_STATE_NODATA   = 0,
-    AM_IOSTEST_SLAVE_STATE_DATA     = 1,
-} AM_IOSTEST_SLAVE_STATE_E;
 
 volatile AM_IOSTEST_SLAVE_STATE_E g_iosState;
 
-static void *g_pIOSHandle;
+void *g_pIOSHandle;
 
 //*****************************************************************************
 //
@@ -302,7 +298,67 @@ static void VersionConfig(void)
 
 }
 
+#if 1
+//*****************************************************************************
+//
+// Main function.
+//
+//*****************************************************************************
+int main(void)
+{
+    am_hal_clkgen_control(AM_HAL_CLKGEN_CONTROL_SYSCLK_MAX, 0);
 
+    //
+    // Set the default cache configuration
+    //
+    am_hal_cachectrl_config(&am_hal_cachectrl_defaults);
+    am_hal_cachectrl_enable();
+
+    //
+    // Configure the board for low power operation.
+    //
+    am_bsp_low_power_init();
+
+    //
+    // Enable the ITM print interface.
+    //
+    am_bsp_itm_printf_enable();
+
+    //
+    // Clear the terminal and print the banner.
+    //
+    am_util_stdio_terminal_clear();
+	
+	//am_util_stdio_printf("IOS FIFO Example\n");
+
+	
+	
+    //
+    // Enable the IOS
+    //
+    ios_set_up();
+    VersionConfig();
+
+    //
+    // Enable interrupts so we can receive messages from the boot host.
+    //
+    am_hal_interrupt_master_enable();
+
+
+	//
+    // Run the application.
+    //
+    run_tasks();
+
+    //
+    // We shouldn't ever get here.
+    //
+    while (1)
+    {
+    }
+
+}
+#else
 //*****************************************************************************
 //
 // Main function.
@@ -395,5 +451,5 @@ int main(void)
         }
     }
 }
-
+#endif
 

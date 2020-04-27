@@ -89,6 +89,7 @@ DEFINES+= -DAM_PACKAGE_BGA
 DEFINES+= -DAM_PART_APOLLO3
 DEFINES+= -Dgcc
 DEFINES+= -DRELAJET
+DEFINES+= -DAM_DEBUG_PRINTF
 
 INCLUDES = -I../../../../../mcu/apollo3
 INCLUDES+= -I../../../../..
@@ -99,24 +100,37 @@ INCLUDES+= -I../../../../../devices
 INCLUDES+= -I../../../bsp
 INCLUDES+= -I../../../../..CMSIS/ARM/Include
 INCLUDES+= -I../../../../../CMSIS/ARM/Include
-
 INCLUDES+= -I../../../../../devices
+INCLUDES+= -I../../../../../third_party/FreeRTOSv10.1.1/Source/include
+INCLUDES+= -I../../../../../third_party/FreeRTOSv10.1.1/Source/portable/GCC/AMapollo2
 
 VPATH = ../../../../../utils
 VPATH+=:../src
 VPATH+=:../../../../../devices
+VPATH+=:../../../../../third_party/FreeRTOSv10.1.1/Source/portable/GCC/AMapollo2
+VPATH+=:../../../../../third_party/FreeRTOSv10.1.1/Source/portable/MemMang
+VPATH+=:../../../../../third_party/FreeRTOSv10.1.1/Source
 
 SRC = AudioDriver.c
 SRC += ios_fifo.c
 SRC += sbc.c
 SRC += RelaJet.c
-
-
 SRC += am_util_delay.c
 SRC += am_util_faultisr.c
 SRC += am_util_stdio.c
 SRC += am_util_id.c
 SRC += startup_gcc.c
+SRC += port.c
+SRC += heap_2.c
+SRC += event_groups.c
+SRC += list.c
+SRC += queue.c
+SRC += tasks.c
+SRC += timers.c
+SRC += rtos.c
+SRC += audio_task.c
+
+
 
 CSRC = $(filter %.c,$(SRC))
 ASRC = $(filter %.s,$(SRC))

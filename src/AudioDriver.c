@@ -7,6 +7,10 @@
 #include "am_util.h"
 
 #include "audiodriver.h"
+#include "audio_task.h"
+
+#include "FreeRTOS.h"
+#include "task.h"
 
 
 
@@ -121,6 +125,7 @@ pdm_init(void)
 	                                        | AM_HAL_PDM_INT_OVF));
 
 	NVIC_EnableIRQ(PDM_IRQn);
+	NVIC_SetPriority(PDM_IRQn, NVIC_configMAX_SYSCALL_INTERRUPT_PRIORITY);
 
 
 	// Start the first DMA transaction.
@@ -137,6 +142,7 @@ void
 am_pdm0_isr(void)
 {
 	uint32_t ui32Status;
+	BaseType_t xHigherPriorityTaskWoken;
 	//am_hal_gpio_state_write(8 , AM_HAL_GPIO_OUTPUT_CLEAR);
 
 	//
@@ -147,8 +153,11 @@ am_pdm0_isr(void)
 
 	if (ui32Status & AM_HAL_PDM_INT_DCMP)
 	{
-		g_bPDMDataReady = true;
+		//g_bPDMDataReady = true;
 		pdm_data_get(g_i16PDMBuf[(++g_u32PDMPingpong)%2]);
+		xHigherPriorityTaskWoken = pdFALSE;
+		xTaskNotifyFromISR(audio_task_handle, 1, eSetBits, &xHigherPriorityTaskWoken);
+		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 	}
  	//am_hal_gpio_output_toggle(8); 
 }

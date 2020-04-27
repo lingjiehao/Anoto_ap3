@@ -113,6 +113,7 @@ extern int main(void);
 //
 //*****************************************************************************
 __attribute__ ((section(".stack")))
+//TODO: memory usage optimization: if using freeRTOS, the stack size is used for ISR only.
 static uint32_t g_pui32Stack[1024*15];
 #define MAX_HEAP_SIZE (1024*50)
 static char mem_array[MAX_HEAP_SIZE]={0};
